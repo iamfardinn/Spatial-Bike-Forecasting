@@ -11,12 +11,18 @@ Outputs:
   * split_validation.png   -- cohort proportion & demand distribution check
 """
 
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 from matplotlib.gridspec import GridSpec
 from sklearn.model_selection import train_test_split
+
+FIG_DIR = "outputs/figures"
+TBL_DIR = "outputs/tables"
+os.makedirs(FIG_DIR, exist_ok=True)
+os.makedirs(TBL_DIR, exist_ok=True)
 
 # ── 0. Style (matches Phase 1) ────────────────────────────────────────────────
 plt.rcParams.update({
@@ -40,7 +46,7 @@ TEST_SIZE     = 0.20
 
 # ── 1. Load enriched data ──────────────────────────────────────────────────────
 print("Loading MGWR_with_Cohorts.csv ...")
-df = pd.read_csv("MGWR_with_Cohorts.csv")
+df = pd.read_csv(f"{TBL_DIR}/MGWR_with_Cohorts.csv")
 print(f"  {len(df):,} stations, {df.shape[1]} columns")
 
 # Feature groups (excluding target and cohort label)
@@ -182,14 +188,14 @@ ax4.grid(True)
 fig.suptitle("Phase 2 — Stratified Split Validation  |  Seoul Bike Stations",
              fontsize=14, weight="bold", color="#e8ecf4", y=1.01)
 
-plt.savefig("split_validation.png", dpi=150, bbox_inches="tight",
+plt.savefig(f"{FIG_DIR}/split_validation.png", dpi=150, bbox_inches="tight",
             facecolor="#0f1117")
 plt.close()
 print("\n  -> split_validation.png saved")
 
 # ── 5. Save splits ─────────────────────────────────────────────────────────────
-train_df.to_csv("train.csv", index=False)
-test_df.to_csv("test.csv",   index=False)
+train_df.to_csv(f"{TBL_DIR}/train.csv", index=False)
+test_df.to_csv(f"{TBL_DIR}/test.csv",   index=False)
 print("  -> train.csv saved")
 print("  -> test.csv  saved")
 

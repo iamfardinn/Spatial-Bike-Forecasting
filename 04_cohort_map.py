@@ -13,6 +13,7 @@ Moran's I is computed via a pure numpy/scipy inverse-distance weight matrix
 """
 
 import json
+import os
 import warnings
 import numpy as np
 import pandas as pd
@@ -22,6 +23,11 @@ import folium
 from scipy.spatial.distance import cdist
 
 warnings.filterwarnings("ignore")
+
+FIG_DIR = "outputs/figures"
+TBL_DIR = "outputs/tables"
+os.makedirs(FIG_DIR, exist_ok=True)
+os.makedirs(TBL_DIR, exist_ok=True)
 
 # ── 0. Style ──────────────────────────────────────────────────────────────────
 plt.rcParams.update({
@@ -50,7 +56,7 @@ FOLIUM_COLORS  = ["blue", "green", "orange", "pink"]
 
 # ── 1. Load data ──────────────────────────────────────────────────────────────
 print("Loading MGWR_with_Cohorts.csv ...")
-df = pd.read_csv("MGWR_with_Cohorts.csv")
+df = pd.read_csv(f"{TBL_DIR}/MGWR_with_Cohorts.csv")
 print(f"  {len(df):,} stations, {df.shape[1]} columns")
 
 K = 4
@@ -61,7 +67,7 @@ numeric_cols = df.select_dtypes(include=np.number).columns.tolist()
 numeric_cols = [c for c in numeric_cols if c != "Cohort"]
 centroids = df.groupby("Cohort")[numeric_cols].mean().round(4)
 centroids.index = COHORT_NAMES
-centroids.to_csv("cohort_centroids.csv")
+centroids.to_csv(f"{TBL_DIR}/cohort_centroids.csv")
 print("  -> cohort_centroids.csv saved")
 print(centroids[["Latitude", "Longitude", "Bike_Demand", "Bus_boarding", "Sub_boarding"]].to_string())
 
@@ -120,7 +126,7 @@ morans_result = {
     "interpretation": interpretation,
 }
 
-with open("morans_i_results.json", "w") as f:
+with open(f"{TBL_DIR}/morans_i_results.json", "w") as f:
     json.dump(morans_result, f, indent=2)
 
 print(f"  Moran's I = {I:.4f}  (E[I] = {E_I:.4f})")
@@ -202,7 +208,7 @@ ax.set_title(
 )
 
 plt.tight_layout()
-plt.savefig("cohort_map.png", dpi=150, bbox_inches="tight", facecolor="#0f1117")
+plt.savefig(f"{FIG_DIR}/cohort_map.png", dpi=150, bbox_inches="tight", facecolor="#0f1117")
 plt.close()
 print("  -> cohort_map.png saved")
 
@@ -252,7 +258,7 @@ morans_html = f"""
 """
 m.get_root().html.add_child(folium.Element(morans_html))
 
-m.save("cohort_map.html")
+m.save(f"{FIG_DIR}/cohort_map.html")
 print("  -> cohort_map.html saved")
 
 # ── 6. Summary ────────────────────────────────────────────────────────────────

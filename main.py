@@ -16,7 +16,11 @@ import subprocess
 import sys
 import json
 import time
+import os
 import pandas as pd
+
+FIG_DIR = "outputs/figures"
+TBL_DIR = "outputs/tables"
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 def banner(text):
@@ -58,7 +62,7 @@ banner("PIPELINE COMPLETE  --  Final Summary")
 
 # Phase 1: cohort counts from MGWR_with_Cohorts.csv
 try:
-    df = pd.read_csv("MGWR_with_Cohorts.csv")
+    df = pd.read_csv(f"{TBL_DIR}/MGWR_with_Cohorts.csv")
     cohort_names = ["Cohort A", "Cohort B", "Cohort C", "Cohort D"]
     print("\n  Cohort Assignment (Phase 1)")
     print(f"  {'Cohort':<12} {'Count':>7} {'Mean Demand':>13}")
@@ -71,8 +75,8 @@ except Exception as e:
 
 # Phase 2: split sizes
 try:
-    train_n = len(pd.read_csv("train.csv"))
-    test_n  = len(pd.read_csv("test.csv"))
+    train_n = len(pd.read_csv(f"{TBL_DIR}/train.csv"))
+    test_n  = len(pd.read_csv(f"{TBL_DIR}/test.csv"))
     print(f"\n  Train/Test Split (Phase 2)")
     print(f"  Train : {train_n:,} stations  ({train_n/(train_n+test_n)*100:.0f}%)")
     print(f"  Test  : {test_n:,} stations  ({test_n/(train_n+test_n)*100:.0f}%)")
@@ -81,7 +85,7 @@ except Exception as e:
 
 # Phase 3: model metrics
 try:
-    metrics = pd.read_csv("metrics_summary.csv")
+    metrics = pd.read_csv(f"{TBL_DIR}/metrics_summary.csv")
     overall = metrics[metrics["Cohort"] == "Overall"].iloc[0]
     rf_r2   = overall["RF_R2"]
     xgb_r2  = overall["XGB_R2"]
@@ -97,7 +101,7 @@ except Exception as e:
 
 # Phase 4: Moran's I
 try:
-    with open("morans_i_results.json") as f:
+    with open(f"{TBL_DIR}/morans_i_results.json") as f:
         mi = json.load(f)
     print(f"\n  Spatial Autocorrelation (Phase 4)")
     print(f"  Moran's I : {mi['morans_I']:.4f}")
@@ -112,17 +116,17 @@ except Exception as e:
 print(f"""
   Output Files
   ------------
-  MGWR_with_Cohorts.csv    cohort-labelled station data
-  train.csv / test.csv     stratified split
-  metrics_summary.csv      RMSE / MAE / R2 per model & cohort
-  morans_i_results.json    spatial autocorrelation stats
-  cohort_centroids.csv     per-cohort feature means
-  cohort_elbow.png         K-Means elbow + silhouette
-  cohort_profiles.png      per-cohort feature boxplots
-  split_validation.png     train/test cohort balance check
-  model_comparison.png     RF vs XGBoost 4-panel dashboard
-  cohort_map.png           static GPS cohort map
-  cohort_map.html          interactive Folium map
+  MGWR_with_Cohorts.csv    outputs/tables/
+  train.csv / test.csv     outputs/tables/
+  metrics_summary.csv      outputs/tables/
+  morans_i_results.json    outputs/tables/
+  cohort_centroids.csv     outputs/tables/
+  cohort_elbow.png         outputs/figures/
+  cohort_profiles.png      outputs/figures/
+  split_validation.png     outputs/figures/
+  model_comparison.png     outputs/figures/
+  cohort_map.png           outputs/figures/
+  cohort_map.html          outputs/figures/
 
   Total pipeline time: {total_elapsed:.1f}s
 """)

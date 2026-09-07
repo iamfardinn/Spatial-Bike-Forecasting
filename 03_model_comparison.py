@@ -9,6 +9,7 @@ Outputs:
   * metrics_summary.csv    -- RMSE / MAE / R2 for both models (overall + per-cohort)
 """
 
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -19,6 +20,11 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error, r2_score
 import xgboost as xgb
 import warnings
 warnings.filterwarnings("ignore")
+
+FIG_DIR = "outputs/figures"
+TBL_DIR = "outputs/tables"
+os.makedirs(FIG_DIR, exist_ok=True)
+os.makedirs(TBL_DIR, exist_ok=True)
 
 # ── 0. Style (matches Phase 1 / 2) ───────────────────────────────────────────
 plt.rcParams.update({
@@ -43,8 +49,8 @@ TARGET        = "Bike_Demand"
 
 # ── 1. Load splits ────────────────────────────────────────────────────────────
 print("Loading train / test splits ...")
-train_df = pd.read_csv("train.csv")
-test_df  = pd.read_csv("test.csv")
+train_df = pd.read_csv(f"{TBL_DIR}/train.csv")
+test_df  = pd.read_csv(f"{TBL_DIR}/test.csv")
 print(f"  Train: {len(train_df):,}  |  Test: {len(test_df):,}")
 
 FEATURES = [c for c in train_df.columns if c not in [TARGET, "Cohort", "ID"]]
@@ -117,7 +123,7 @@ rows.insert(0, {"Cohort": "Overall",
                 "XGB_RMSE": xgb_rmse, "XGB_MAE": xgb_mae, "XGB_R2": xgb_r2})
 
 metrics_df = pd.DataFrame(rows)
-metrics_df.to_csv("metrics_summary.csv", index=False)
+metrics_df.to_csv(f"{TBL_DIR}/metrics_summary.csv", index=False)
 print("\n  -> metrics_summary.csv saved")
 
 # ── 4. Plots ──────────────────────────────────────────────────────────────────
@@ -193,7 +199,7 @@ fig.suptitle(
     fontsize=14, weight="bold", color="#e8ecf4", y=1.01
 )
 
-plt.savefig("model_comparison.png", dpi=150, bbox_inches="tight", facecolor="#0f1117")
+plt.savefig(f"{FIG_DIR}/model_comparison.png", dpi=150, bbox_inches="tight", facecolor="#0f1117")
 plt.close()
 print("  -> model_comparison.png saved")
 

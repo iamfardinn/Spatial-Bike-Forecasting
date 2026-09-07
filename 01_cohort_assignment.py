@@ -10,6 +10,7 @@ Outputs:
   * cohort_profiles.png    -- per-cohort boxplots of key features
 """
 
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -18,6 +19,11 @@ from matplotlib.gridspec import GridSpec
 from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from sklearn.metrics import silhouette_score
+
+FIG_DIR = "outputs/figures"
+TBL_DIR = "outputs/tables"
+os.makedirs(FIG_DIR, exist_ok=True)
+os.makedirs(TBL_DIR, exist_ok=True)
 
 #  0. Style 
 plt.rcParams.update({
@@ -92,7 +98,7 @@ ax2.legend()
 ax2.grid(True)
 
 plt.tight_layout()
-plt.savefig("cohort_elbow.png", dpi=150, bbox_inches="tight", facecolor="#0f1117")
+plt.savefig(f"{FIG_DIR}/cohort_elbow.png", dpi=150, bbox_inches="tight", facecolor="#0f1117")
 plt.close()
 print("  -> cohort_elbow.png saved")
 
@@ -158,12 +164,12 @@ for i, (name, color) in enumerate(zip(COHORT_NAMES, COHORT_COLORS)):
     fig.text(0.15 + i * 0.18, 0.01, f" {name}",
              color=color, fontsize=10, ha="center", weight="bold")
 
-plt.savefig("cohort_profiles.png", dpi=150, bbox_inches="tight", facecolor="#0f1117")
+plt.savefig(f"{FIG_DIR}/cohort_profiles.png", dpi=150, bbox_inches="tight", facecolor="#0f1117")
 plt.close()
 print("  -> cohort_profiles.png saved")
 
 #  8. Save enriched CSV 
-out_path = "MGWR_with_Cohorts.csv"
+out_path = f"{TBL_DIR}/MGWR_with_Cohorts.csv"
 df.to_csv(out_path, index=False)
 print(f"\n  -> {out_path} saved  ({len(df):,} rows, columns: {df.columns.tolist()[-4:]} )")
 
