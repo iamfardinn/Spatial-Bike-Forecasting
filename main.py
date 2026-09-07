@@ -126,7 +126,6 @@ print(f"""
   split_validation.png     outputs/figures/
   model_comparison.png     outputs/figures/
   cohort_map.png           outputs/figures/
-  cohort_map.html          outputs/figures/
 
   Total pipeline time: {total_elapsed:.1f}s
 """)

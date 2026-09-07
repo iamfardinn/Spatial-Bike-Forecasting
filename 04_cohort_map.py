@@ -19,7 +19,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
-import folium
 from scipy.spatial.distance import cdist
 
 warnings.filterwarnings("ignore")
@@ -46,13 +45,6 @@ plt.rcParams.update({
 
 COHORT_COLORS  = ["#4fc3f7", "#81c784", "#ffb74d", "#f48fb1"]
 COHORT_NAMES   = ["Cohort A", "Cohort B", "Cohort C", "Cohort D"]
-COHORT_DESCS   = [
-    "East Seoul — Moderate Demand",
-    "North Seoul — Heavy Transit Use",
-    "West Seoul — Largest Group",
-    "High-Demand Hotspots",
-]
-FOLIUM_COLORS  = ["blue", "green", "orange", "pink"]
 
 # ── 1. Load data ──────────────────────────────────────────────────────────────
 print("Loading MGWR_with_Cohorts.csv ...")
@@ -212,62 +204,12 @@ plt.savefig(f"{FIG_DIR}/cohort_map.png", dpi=150, bbox_inches="tight", facecolor
 plt.close()
 print("  -> cohort_map.png saved")
 
-# ── 5. Interactive Folium map ─────────────────────────────────────────────────
-print("\nGenerating interactive Folium map ...")
-
-center_lat = df["Latitude"].mean()
-center_lon = df["Longitude"].mean()
-
-m = folium.Map(
-    location=[center_lat, center_lon],
-    zoom_start=12,
-    tiles="CartoDB dark_matter",
-)
-
-for c in range(K):
-    sub = df[df["Cohort"] == c]
-    fg  = folium.FeatureGroup(name=f"{COHORT_NAMES[c]} — {COHORT_DESCS[c]}")
-    for _, row in sub.iterrows():
-        folium.CircleMarker(
-            location=[row["Latitude"], row["Longitude"]],
-            radius=5,
-            color=COHORT_COLORS[c],
-            fill=True,
-            fill_color=COHORT_COLORS[c],
-            fill_opacity=0.75,
-            popup=folium.Popup(
-                f"<b>{COHORT_NAMES[c]}</b><br>"
-                f"Demand: {row['Bike_Demand']:.1f}<br>"
-                f"Lat: {row['Latitude']:.4f}  Lon: {row['Longitude']:.4f}",
-                max_width=200,
-            ),
-        ).add_to(fg)
-    fg.add_to(m)
-
-folium.LayerControl(collapsed=False).add_to(m)
-
-# Moran's I annotation
-morans_html = f"""
-<div style="position:fixed;bottom:30px;left:30px;z-index:1000;
-            background:#1a1d27cc;border:1px solid #3a3f55;
-            padding:10px 14px;border-radius:8px;color:#e8ecf4;font-size:13px;">
-  <b>Global Moran's I</b><br>
-  I = {I:.4f} &nbsp;|&nbsp; p = {p_val:.4f}<br>
-  <span style="color:#81c784">Significant positive spatial autocorrelation</span>
-</div>
-"""
-m.get_root().html.add_child(folium.Element(morans_html))
-
-m.save(f"{FIG_DIR}/cohort_map.html")
-print("  -> cohort_map.html saved")
-
-# ── 6. Summary ────────────────────────────────────────────────────────────────
+# ── 5. Summary ────────────────────────────────────────────────────────────────
 print(f"""
 ==========================================
   Phase 4 complete
 ==========================================
-  cohort_map.png          static map
-  cohort_map.html         interactive map
+  cohort_map.png          static map (paper-ready)
   cohort_centroids.csv    per-cohort means
   morans_i_results.json   spatial stats
 ------------------------------------------
@@ -277,3 +219,4 @@ print(f"""
   Result     : {'Significant positive autocorrelation' if p_val < 0.05 else 'Not significant'}
 ==========================================
 """)
+
