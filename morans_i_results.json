@@ -1,0 +1,8 @@
+{
+  "morans_I": 0.3551,
+  "expected_I": -0.00038,
+  "variance_I": 1.35e-06,
+  "z_score": 305.9035,
+  "p_value": 0.0,
+  "interpretation": "Statistically significant positive spatial autocorrelation detected (p < 0.05). Clusters are geographically contiguous."
+}
