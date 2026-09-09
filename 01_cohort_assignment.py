@@ -27,20 +27,20 @@ os.makedirs(TBL_DIR, exist_ok=True)
 
 #  0. Style 
 plt.rcParams.update({
-    "figure.facecolor": "#0f1117",
-    "axes.facecolor":   "#1a1d27",
-    "axes.edgecolor":   "#3a3f55",
-    "axes.labelcolor":  "#c8cfe8",
-    "xtick.color":      "#c8cfe8",
-    "ytick.color":      "#c8cfe8",
-    "text.color":       "#e8ecf4",
-    "grid.color":       "#2e3248",
+    "figure.facecolor": "#ffffff",
+    "axes.facecolor":   "#ffffff",
+    "axes.edgecolor":   "#333333",
+    "axes.labelcolor":  "#222222",
+    "xtick.color":      "#222222",
+    "ytick.color":      "#222222",
+    "text.color":       "#111111",
+    "grid.color":       "#e5e7eb",
     "grid.linewidth":   0.6,
     "font.family":      "DejaVu Sans",
     "font.size":        11,
 })
 
-COHORT_COLORS = ["#4fc3f7", "#81c784", "#ffb74d", "#f48fb1"]
+COHORT_COLORS = ["#1976d2", "#388e3c", "#f57c00", "#d32f2f"]
 COHORT_NAMES  = ["Cohort A", "Cohort B", "Cohort C", "Cohort D"]
 
 #  1. Load data 
@@ -75,30 +75,31 @@ for k in k_range:
 
 #  4. Plot elbow 
 fig, axes = plt.subplots(1, 2, figsize=(13, 5))
-fig.suptitle("K-Means Cohort Selection  Seoul Bike Stations", fontsize=14, weight="bold", y=1.02)
+fig.patch.set_facecolor("#ffffff")
+fig.suptitle("K-Means Cohort Selection — Seoul Bike Stations", fontsize=14, weight="bold", color="#111111", y=1.02)
 
 # Inertia
 ax1 = axes[0]
-ax1.plot(list(k_range), inertias, "o-", color="#4fc3f7", linewidth=2.5, markersize=7)
-ax1.axvline(4, color="#ffb74d", linewidth=1.5, linestyle="--", label="Chosen k = 4")
+ax1.plot(list(k_range), inertias, "o-", color="#1976d2", linewidth=2.5, markersize=7)
+ax1.axvline(4, color="#d32f2f", linewidth=1.5, linestyle="--", label="Chosen k = 4")
 ax1.set_xlabel("Number of Clusters (k)")
 ax1.set_ylabel("Inertia (WCSS)")
-ax1.set_title("Elbow Plot")
-ax1.legend()
+ax1.set_title("Elbow Plot", weight="bold")
+ax1.legend(facecolor="#ffffff", edgecolor="#cccccc")
 ax1.grid(True)
 
 # Silhouette
 ax2 = axes[1]
-ax2.plot(list(k_range), sil_scores, "s-", color="#81c784", linewidth=2.5, markersize=7)
-ax2.axvline(4, color="#ffb74d", linewidth=1.5, linestyle="--", label="Chosen k = 4")
+ax2.plot(list(k_range), sil_scores, "s-", color="#388e3c", linewidth=2.5, markersize=7)
+ax2.axvline(4, color="#d32f2f", linewidth=1.5, linestyle="--", label="Chosen k = 4")
 ax2.set_xlabel("Number of Clusters (k)")
 ax2.set_ylabel("Silhouette Score")
-ax2.set_title("Silhouette Score")
-ax2.legend()
+ax2.set_title("Silhouette Score", weight="bold")
+ax2.legend(facecolor="#ffffff", edgecolor="#cccccc")
 ax2.grid(True)
 
 plt.tight_layout()
-plt.savefig(f"{FIG_DIR}/cohort_elbow.png", dpi=150, bbox_inches="tight", facecolor="#0f1117")
+plt.savefig(f"{FIG_DIR}/cohort_elbow.png", dpi=300, bbox_inches="tight", facecolor="#ffffff")
 plt.close()
 print("  -> cohort_elbow.png saved")
 
@@ -132,7 +133,7 @@ PROFILE_FEATURES = ["Bike_Demand", "Bus_boarding", "Sub_boarding",
                     "Pop_perc", "Slope", "Temperature_C"]
 
 fig = plt.figure(figsize=(16, 9))
-fig.patch.set_facecolor("#0f1117")
+fig.patch.set_facecolor("#ffffff")
 gs = GridSpec(2, 3, figure=fig, hspace=0.45, wspace=0.35)
 
 for idx, feat in enumerate(PROFILE_FEATURES):
@@ -142,10 +143,10 @@ for idx, feat in enumerate(PROFILE_FEATURES):
         data_by_cohort,
         patch_artist=True,
         widths=0.5,
-        medianprops=dict(color="#ffffff", linewidth=2),
-        whiskerprops=dict(color="#8892b0"),
-        capprops=dict(color="#8892b0"),
-        flierprops=dict(marker="o", markersize=2, color="#8892b0", alpha=0.4),
+        medianprops=dict(color="#111111", linewidth=2),
+        whiskerprops=dict(color="#555555"),
+        capprops=dict(color="#555555"),
+        flierprops=dict(marker="o", markersize=2, color="#777777", alpha=0.4),
     )
     for patch, color in zip(bp["boxes"], COHORT_COLORS):
         patch.set_facecolor(color)
@@ -156,15 +157,15 @@ for idx, feat in enumerate(PROFILE_FEATURES):
     ax.set_xticklabels(COHORT_NAMES, fontsize=8)
     ax.grid(True, axis="y")
 
-fig.suptitle("Feature Profiles by Cohort  Seoul Bike Stations",
-             fontsize=14, weight="bold", color="#e8ecf4")
+fig.suptitle("Feature Profiles by Cohort — Seoul Bike Stations",
+             fontsize=14, weight="bold", color="#111111")
 
 # Add legend strip
 for i, (name, color) in enumerate(zip(COHORT_NAMES, COHORT_COLORS)):
-    fig.text(0.15 + i * 0.18, 0.01, f" {name}",
+    fig.text(0.15 + i * 0.18, 0.01, f"■ {name}",
              color=color, fontsize=10, ha="center", weight="bold")
 
-plt.savefig(f"{FIG_DIR}/cohort_profiles.png", dpi=150, bbox_inches="tight", facecolor="#0f1117")
+plt.savefig(f"{FIG_DIR}/cohort_profiles.png", dpi=300, bbox_inches="tight", facecolor="#ffffff")
 plt.close()
 print("  -> cohort_profiles.png saved")
 

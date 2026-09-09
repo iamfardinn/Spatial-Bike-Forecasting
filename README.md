@@ -1,6 +1,6 @@
 # Seoul Bike-Sharing Demand Analysis
 
-Spatial demand cohort analysis and machine learning prediction for Seoul's public bike-sharing system (Ttareungyi), using station-level GPS, land-use, transit, and weather features.
+Spatial demand cohort analysis and machine learning prediction for Seoul's public bike-sharing system, using station-level GPS, land-use, transit, and weather features.
 
 ---
 

@@ -26,20 +26,20 @@ os.makedirs(TBL_DIR, exist_ok=True)
 
 # ── 0. Style (matches Phase 1) ────────────────────────────────────────────────
 plt.rcParams.update({
-    "figure.facecolor": "#0f1117",
-    "axes.facecolor":   "#1a1d27",
-    "axes.edgecolor":   "#3a3f55",
-    "axes.labelcolor":  "#c8cfe8",
-    "xtick.color":      "#c8cfe8",
-    "ytick.color":      "#c8cfe8",
-    "text.color":       "#e8ecf4",
-    "grid.color":       "#2e3248",
+    "figure.facecolor": "#ffffff",
+    "axes.facecolor":   "#ffffff",
+    "axes.edgecolor":   "#333333",
+    "axes.labelcolor":  "#222222",
+    "xtick.color":      "#222222",
+    "ytick.color":      "#222222",
+    "text.color":       "#111111",
+    "grid.color":       "#e5e7eb",
     "grid.linewidth":   0.6,
     "font.family":      "DejaVu Sans",
     "font.size":        11,
 })
 
-COHORT_COLORS = ["#4fc3f7", "#81c784", "#ffb74d", "#f48fb1"]
+COHORT_COLORS = ["#1976d2", "#388e3c", "#f57c00", "#d32f2f"]
 COHORT_NAMES  = ["Cohort A", "Cohort B", "Cohort C", "Cohort D"]
 RANDOM_STATE  = 42
 TEST_SIZE     = 0.20
@@ -94,7 +94,7 @@ for c, name in enumerate(COHORT_NAMES):
 
 # ── 4. Validation plot ─────────────────────────────────────────────────────────
 fig = plt.figure(figsize=(16, 9))
-fig.patch.set_facecolor("#0f1117")
+fig.patch.set_facecolor("#ffffff")
 gs = GridSpec(2, 2, figure=fig, hspace=0.45, wspace=0.35)
 
 # --- Panel A: Cohort counts (Train vs Test side-by-side bars) -----------------
@@ -106,23 +106,22 @@ train_counts = [len(train_df[train_df["Cohort"] == c]) for c in range(k)]
 test_counts  = [len(test_df[test_df["Cohort"] == c])  for c in range(k)]
 
 bars_tr = ax1.bar(x - bar_w/2, train_counts, bar_w,
-                  color=COHORT_COLORS, alpha=0.85, label="Train")
+                  color="#1976d2", alpha=0.85, label="Train")
 bars_te = ax1.bar(x + bar_w/2, test_counts,  bar_w,
-                  color=COHORT_COLORS, alpha=0.45, label="Test",
-                  edgecolor=COHORT_COLORS, linewidth=1.5)
+                  color="#e53935", alpha=0.85, label="Test")
 
 for bar in bars_tr:
     ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 5,
-             f"{int(bar.get_height())}", ha="center", va="bottom", fontsize=8)
+             f"{int(bar.get_height())}", ha="center", va="bottom", fontsize=8, color="#111111")
 for bar in bars_te:
     ax1.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 5,
-             f"{int(bar.get_height())}", ha="center", va="bottom", fontsize=8)
+             f"{int(bar.get_height())}", ha="center", va="bottom", fontsize=8, color="#111111")
 
 ax1.set_xticks(x)
 ax1.set_xticklabels(COHORT_NAMES, fontsize=9)
 ax1.set_ylabel("Station Count")
 ax1.set_title("Cohort Counts — Train vs Test", weight="bold")
-ax1.legend(facecolor="#1a1d27", edgecolor="#3a3f55")
+ax1.legend(facecolor="#ffffff", edgecolor="#cccccc")
 ax1.grid(True, axis="y")
 
 # --- Panel B: Cohort proportion stacked bars ----------------------------------
@@ -134,13 +133,13 @@ for c, (name, color) in enumerate(zip(COHORT_NAMES, COHORT_COLORS)):
     proportions = [len(splits[s][splits[s]["Cohort"] == c]) / len(splits[s]) * 100
                    for s in splits]
     bars = ax2.bar(list(splits.keys()), proportions, bottom=list(bottom_vals.values()),
-                   color=color, alpha=0.85, width=0.5)
+                   color=color, alpha=0.88, width=0.5)
     for bar, prop in zip(bars, proportions):
         if prop > 4:
             ax2.text(bar.get_x() + bar.get_width()/2,
                      bar.get_y() + bar.get_height()/2,
                      f"{prop:.1f}%", ha="center", va="center",
-                     fontsize=8, color="#0f1117", weight="bold")
+                     fontsize=8, color="#ffffff", weight="bold")
     for s, p in zip(splits, proportions):
         bottom_vals[s] += p
 
@@ -150,20 +149,20 @@ ax2.set_ylim(0, 105)
 ax2.grid(True, axis="y")
 legend_patches = [mpatches.Patch(color=c, label=n)
                   for c, n in zip(COHORT_COLORS, COHORT_NAMES)]
-ax2.legend(handles=legend_patches, facecolor="#1a1d27", edgecolor="#3a3f55",
+ax2.legend(handles=legend_patches, facecolor="#ffffff", edgecolor="#cccccc",
            fontsize=8, loc="upper right")
 
 # --- Panel C: Bike_Demand distribution histogram Train vs Test ----------------
 ax3 = fig.add_subplot(gs[1, 0])
 bins = np.linspace(df[TARGET].min(), df[TARGET].quantile(0.99), 40)
-ax3.hist(train_df[TARGET], bins=bins, color="#4fc3f7", alpha=0.6,
+ax3.hist(train_df[TARGET], bins=bins, color="#1976d2", alpha=0.55,
          density=True, label=f"Train (n={len(train_df):,})")
-ax3.hist(test_df[TARGET],  bins=bins, color="#f48fb1", alpha=0.6,
+ax3.hist(test_df[TARGET],  bins=bins, color="#e53935", alpha=0.5,
          density=True, label=f"Test  (n={len(test_df):,})")
 ax3.set_xlabel("Bike Demand (avg daily trips)")
 ax3.set_ylabel("Density")
 ax3.set_title("Demand Distribution — Train vs Test", weight="bold")
-ax3.legend(facecolor="#1a1d27", edgecolor="#3a3f55")
+ax3.legend(facecolor="#ffffff", edgecolor="#cccccc")
 ax3.grid(True)
 
 # --- Panel D: Per-cohort mean demand (Train vs Test) --------------------------
@@ -171,25 +170,25 @@ ax4 = fig.add_subplot(gs[1, 1])
 train_means = [train_df[train_df["Cohort"] == c][TARGET].mean() for c in range(k)]
 test_means  = [test_df[test_df["Cohort"] == c][TARGET].mean()  for c in range(k)]
 
-ax4.plot(COHORT_NAMES, train_means, "o-", color="#4fc3f7",
+ax4.plot(COHORT_NAMES, train_means, "o-", color="#1976d2",
          linewidth=2.5, markersize=8, label="Train mean")
-ax4.plot(COHORT_NAMES, test_means,  "s--", color="#f48fb1",
+ax4.plot(COHORT_NAMES, test_means,  "s--", color="#e53935",
          linewidth=2.5, markersize=8, label="Test mean")
 
 for i, (tr, te) in enumerate(zip(train_means, test_means)):
-    ax4.text(i, tr + 0.2, f"{tr:.2f}", ha="center", fontsize=8, color="#4fc3f7")
-    ax4.text(i, te - 0.6, f"{te:.2f}", ha="center", fontsize=8, color="#f48fb1")
+    ax4.text(i, tr + 0.3, f"{tr:.2f}", ha="center", fontsize=8, color="#1976d2", weight="bold")
+    ax4.text(i, te - 0.7, f"{te:.2f}", ha="center", fontsize=8, color="#e53935", weight="bold")
 
 ax4.set_ylabel("Mean Bike Demand")
 ax4.set_title("Per-Cohort Mean Demand — Train vs Test", weight="bold")
-ax4.legend(facecolor="#1a1d27", edgecolor="#3a3f55")
+ax4.legend(facecolor="#ffffff", edgecolor="#cccccc")
 ax4.grid(True)
 
 fig.suptitle("Phase 2 — Stratified Split Validation  |  Seoul Bike Stations",
-             fontsize=14, weight="bold", color="#e8ecf4", y=1.01)
+             fontsize=14, weight="bold", color="#111111", y=1.01)
 
-plt.savefig(f"{FIG_DIR}/split_validation.png", dpi=150, bbox_inches="tight",
-            facecolor="#0f1117")
+plt.savefig(f"{FIG_DIR}/split_validation.png", dpi=300, bbox_inches="tight",
+            facecolor="#ffffff")
 plt.close()
 print("\n  -> split_validation.png saved")
 

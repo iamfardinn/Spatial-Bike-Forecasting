@@ -24,3 +24,11 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# Paper & LaTeX files
+paper.tex
+*.pdf
+*.aux
+*.log
+*.out
+*.synctex.gz
